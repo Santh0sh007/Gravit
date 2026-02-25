@@ -1,0 +1,75 @@
+name: Build Signed APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --legacy-peer-deps
+
+      - name: Build Web App
+        run: npm run build
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'zulu'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Add and Sync Android Platform
+        run: |
+          if [ ! -d "android" ]; then
+            npx cap add android
+          fi
+          npx cap sync
+
+      - name: Build Android APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Sign Release APK
+        if: success() && env.HAS_SECRETS == 'true'
+        env:
+          HAS_SECRETS: ${{ secrets.ANDROID_KEYSTORE != '' }}
+        run: |
+          BUILD_TOOLS_PATH=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > release.keystore
+          $BUILD_TOOLS_PATH/zipalign -v 4 android/app/build/outputs/apk/release/app-release-unsigned.apk android/app/build/outputs/apk/release/app-release-aligned.apk
+          $BUILD_TOOLS_PATH/apksigner sign --ks release.keystore \
+            --ks-key-alias "${{ secrets.ANDROID_KEYALIAS }}" \
+            --ks-pass pass:"${{ secrets.ANDROID_PASSWORD }}" \
+            --out android/app/build/outputs/apk/release/gravit-runner-signed.apk \
+            android/app/build/outputs/apk/release/app-release-aligned.apk
+
+      - name: Upload Signed APK
+        if: success() && env.HAS_SECRETS == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gravit-runner-signed-apk
+          path: android/app/build/outputs/apk/release/gravit-runner-signed.apk
+
+      - name: Upload Unsigned APK (Fallback)
+        if: success() && env.HAS_SECRETS == 'false'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gravit-runner-unsigned-apk
+          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
