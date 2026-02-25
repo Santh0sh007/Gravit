@@ -9,6 +9,9 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
+    env:
+      HAS_SECRETS: ${{ secrets.ANDROID_KEYSTORE != '' }}
+
     steps:
       - uses: actions/checkout@v4
 
@@ -48,8 +51,6 @@ jobs:
 
       - name: Sign Release APK
         if: success() && env.HAS_SECRETS == 'true'
-        env:
-          HAS_SECRETS: ${{ secrets.ANDROID_KEYSTORE != '' }}
         run: |
           BUILD_TOOLS_PATH=$(ls -d $ANDROID_HOME/build-tools/* | sort -V | tail -1)
           echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > release.keystore
