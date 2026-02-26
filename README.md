@@ -1,17 +1,17 @@
-# Rewind Runner 🎮
+# Rewind Runner 
 
 **Rewind Runner** is a fast-paced, pixel-art neon platformer with unique time-loop mechanics. Survive the rewind, master the movement, and conquer the neon-drenched levels.
 
 ---
 
-## ✨ Features
+##  Features
 
 - **Time-Loop Mechanics:** Experience a unique gameplay loop where time bends to your will.
 - **Neon Aesthetics:** Stunning pixel-art style with vibrant neon lights and effects.
 - **Fast-Paced Action:** Tight controls and challenging platforming sequences.
 - **Cross-Platform:** Built with Capacitor for mobile (Android) and web support.
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Prerequisites
 
@@ -35,7 +35,7 @@ npm run dev
 
 The app will be available at `http://localhost:5173`.
 
-## 📦 Build & Deployment
+##  Build & Deployment
 
 ### Web Build
 ```bash
@@ -53,14 +53,14 @@ To open the project in Android Studio:
 npm run cap:open
 ```
 
-## 🛠 Tech Stack
+##  Tech Stack
 
 - **Core:** JavaScript, HTML5 Canvas
 - **Build Tool:** [Vite](https://vitejs.dev/)
 - **Mobile Framework:** [Capacitor](https://capacitorjs.com/)
 - **Styling:** Vanilla CSS
 
-## 📜 Available Scripts
+##  Available Scripts
 
 - `dev`: Start Vite development server.
 - `build`: Build the production-ready web application.
@@ -72,4 +72,4 @@ npm run cap:open
 
 ---
 
-Built with ❤️ by [Your Name/Organization]
+Built with ❤️ by Sant0sh
